@@ -26,11 +26,22 @@ model Student{
   fullName String
   groupeId Int
   groupe Groupe @relation(fields: [groupeId], references: [id])
-  groupeJournals GroupeJournal[]
+  studentEvent StudentEvent[]
 }
 
-model GroupeJournal{
+model Event{
   id Int @id @default(autoincrement())
-  studentId Int
-  student Student @relation(fields: [studentId], references: [id])
+  eventName String
+  studentEvent StudentEvent[]
+}
+
+
+model StudentEvent {
+  id         Int    @id @default(autoincrement())
+  studentId  Int
+  eventId    Int
+  point      Int
+  student    Student @relation(fields: [studentId], references: [id])
+  event      Event   @relation(fields: [eventId], references: [id])
+  @@unique([studentId, eventId]) 
 }

@@ -1,6 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { GroupeService } from './groupe.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Группа")
 @Controller('groupe')
 export class GroupeController {
   constructor(private readonly groupeService: GroupeService) {}
@@ -12,5 +14,10 @@ export class GroupeController {
   @Get(":groupeId")
   async getGroupeById(@Param("groupeId") groupeId: number){
     return this.groupeService.groupeById(groupeId)
+  }
+
+  @Get("allCourse/:courseId")
+  async allGroupesByCourse(@Param("courseId") id: number){
+    return this.groupeService.allByCourse(id)
   }
 }
