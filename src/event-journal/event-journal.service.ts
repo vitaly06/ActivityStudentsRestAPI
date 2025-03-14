@@ -6,8 +6,8 @@ export class EventJournalService {
     constructor(private readonly prisma: PrismaService){}
 
     async getJournalForGroupe(groupeId: number) {
-        const res: Array<any> = []; 
-        
+        const res: Array<any> = [];
+    
         const students = await this.prisma.student.findMany({
             where: { groupeId: Number(groupeId) }
         });
@@ -18,31 +18,41 @@ export class EventJournalService {
             const studentRecords = await this.prisma.studentEvent.findMany({
                 where: { studentId: Number(student.id) }
             });
+    
             const resultStudent = {
                 studentId: student.id,
                 fullName: student.fullName,
                 events: [] 
             };
-            if (studentRecords.length > 0) {
-                for (const record of studentRecords) {
-                    const event = await this.prisma.event.findUnique({
-                        where: { id: Number(record.eventId) }
+    
+            // Создаем объект для хранения ID мероприятий, которые уже есть у студента
+            const eventIdsWithPoints: { [key: number]: number } = {};
+    
+            // Заполняем события студента
+            for (const record of studentRecords) {
+                const event = await this.prisma.event.findUnique({
+                    where: { id: Number(record.eventId) }
+                });
+                if (event) {
+                    eventIdsWithPoints[event.id] = record.point; // Сохраняем баллы для мероприятия
+                    resultStudent.events.push({
+                        name: event.eventName,
+                        point: record.point
                     });
-                    if (event) {
-                        resultStudent.events.push({
-                            name: event.eventName,
-                            point: record.point
-                        });
-                    }
                 }
-            } else {
-                for (const event of events) {
+            }
+    
+            // Проверяем, есть ли мероприятия, которые отсутствуют у студента
+            for (const event of events) {
+                if (!(event.id in eventIdsWithPoints)) {
+                    // Если мероприятия нет, добавляем его с 0 баллами
                     resultStudent.events.push({
                         name: event.eventName,
                         point: 0
                     });
                 }
             }
+    
             res.push(resultStudent);
         }
         return res; 

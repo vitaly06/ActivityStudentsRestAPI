@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Groupe } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -43,18 +44,35 @@ export class GroupeService {
         });
     
         // Формируем ответ в нужном формате
-        const result = groupes.map(groupe => {
-            const eventsWithPoints = events.map(event => ({
-                name: event.eventName,
-                point: eventPoints[event.id] || 0, // Если нет баллов, ставим 0
-            }));
+        const result = await Promise.all(groupes.map(async groupe => {
+            // Если нет мероприятий, создаем массив с нулями
+            const eventsWithPoints = events.length > 0 
+                ? events.map(event => ({
+                    name: event.eventName,
+                    point: eventPoints[event.id] || 0, // Если нет баллов, ставим 0
+                }))
+                : []; // Если мероприятий нет, возвращаем пустой массив
+    
+            // Если мероприятий нет, добавляем их с нулевыми баллами
+            if (events.length === 0) {
+                // Получаем все мероприятия, чтобы вернуть их с нулевыми баллами
+                const allEvents = await this.prisma.event.findMany();
+                return {
+                    id: groupe.id, // ID группы
+                    groupeName: groupe.groupeName, // Название группы
+                    events: allEvents.map(event => ({
+                        name: event.eventName,
+                        point: 0, // Устанавливаем балл в 0
+                    })),
+                };
+            }
     
             return {
                 id: groupe.id, // ID группы
                 groupeName: groupe.groupeName, // Название группы
                 events: eventsWithPoints, // Мероприятия с баллами
             };
-        });
+        }));
     
         return result;
     }
@@ -82,6 +100,9 @@ export class GroupeService {
             return groupe.groupeName.charAt(0) === String(courseId);
         });
     
+        // Получаем все мероприятия, чтобы использовать их в ответе
+        const allEvents = await this.prisma.event.findMany();
+    
         // Формируем ответ в нужном формате
         const result = await Promise.all(groupeByCourse.map(async groupe => {
             // Создаем объект для хранения баллов за каждое мероприятие
@@ -97,17 +118,8 @@ export class GroupeService {
                 });
             });
     
-            // Получаем список мероприятий с их баллами
-            const events = await this.prisma.event.findMany({
-                where: {
-                    id: {
-                        in: Object.keys(eventPoints).map(Number), // Получаем ID мероприятий
-                    },
-                },
-            });
-    
             // Формируем массив мероприятий с их баллами
-            const eventsWithPoints = events.map(event => ({
+            const eventsWithPoints = allEvents.map(event => ({
                 name: event.eventName,
                 point: eventPoints[event.id] || 0, // Если нет баллов, ставим 0
             }));
@@ -120,5 +132,9 @@ export class GroupeService {
         }));
     
         return result;
+    }
+
+    async allGroupes(): Promise<Groupe[]>{
+        return this.prisma.groupe.findMany()
     }
 }

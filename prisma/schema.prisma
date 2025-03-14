@@ -35,7 +35,6 @@ model Event{
   studentEvent StudentEvent[]
 }
 
-
 model StudentEvent {
   id         Int    @id @default(autoincrement())
   studentId  Int
@@ -44,4 +43,19 @@ model StudentEvent {
   student    Student @relation(fields: [studentId], references: [id])
   event      Event   @relation(fields: [eventId], references: [id])
   @@unique([studentId, eventId]) 
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  fullName String
+  login String @unique
+  password String
+  roleId Int
+  role Role @relation(fields: [roleId], references: [id] )
+}
+
+model Role{
+  id Int @id @default(autoincrement())
+  name String @unique
+  users User[]
 }

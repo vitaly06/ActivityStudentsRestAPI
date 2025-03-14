@@ -13,7 +13,7 @@ export class DepartmentService {
                     include: {
                         students: {
                             include: {
-                                studentEvent: true, 
+                                studentEvent: true, // Убедитесь, что это правильное имя поля
                             },
                         },
                     },
@@ -21,13 +21,15 @@ export class DepartmentService {
             },
         });
     
-        
         if (allDepartments.length === 0) {
             console.log("Нет департаментов в базе данных.");
             return [];
         }
     
-        
+        // Получаем все мероприятия, чтобы использовать их в ответе
+        const allEvents = await this.prisma.event.findMany();
+    
+        // Формируем ответ в нужном формате
         const result = await Promise.all(allDepartments.map(async department => {
             // Создаем объект для хранения баллов за каждое мероприятие
             const eventPoints: { [key: string]: number } = {};
@@ -37,37 +39,23 @@ export class DepartmentService {
                 groupe.students.forEach(student => {
                     student.studentEvent.forEach(event => {
                         if (!eventPoints[event.eventId]) {
-                            eventPoints[event.eventId] = 0; 
+                            eventPoints[event.eventId] = 0; // Инициализируем, если еще нет
                         }
-                        eventPoints[event.eventId] += event.point; 
+                        eventPoints[event.eventId] += event.point; // Суммируем баллы
                     });
                 });
             });
     
-            
-            const events = await this.prisma.event.findMany({
-                where: {
-                    id: {
-                        in: Object.keys(eventPoints).map(Number),
-                    },
-                },
-            });
-    
-           
-            if (events.length === 0) {
-                console.log(`Нет мероприятий для департамента ${department.departmentName}.`);
-            }
-    
             // Формируем массив мероприятий с их баллами
-            const eventsWithPoints = events.map(event => ({
+            const eventsWithPoints = allEvents.map(event => ({
                 name: event.eventName,
-                point: eventPoints[event.id] || 0, 
+                point: eventPoints[event.id] || 0, // Если нет баллов, ставим 0
             }));
     
             return {
-                id: department.id, 
-                departmentName: department.departmentName, 
-                events: eventsWithPoints, 
+                id: department.id, // ID департамента
+                departmentName: department.departmentName, // Название департамента
+                events: eventsWithPoints, // Мероприятия с баллами
             };
         }));
     
