@@ -154,5 +154,68 @@ export class EventJournalService {
             }
         }
     }
+
+    async allJournalForStudents() {
+        // Получаем всех студентов
+        const students = await this.prisma.student.findMany();
+    
+        // Получаем все мероприятия
+        const events = await this.prisma.event.findMany();
+    
+        // Результирующий массив
+        const result: Array<{
+            studentId: number;
+            fullName: string;
+            events: Array<{ name: string; point: number }>;
+        }> = [];
+    
+        // Обрабатываем каждого студента
+        for (const student of students) {
+            // Получаем записи о мероприятиях для текущего студента
+            const studentRecords = await this.prisma.studentEvent.findMany({
+                where: { studentId: student.id },
+            });
+    
+            // Создаем объект для хранения данных студента
+            const studentData = {
+                studentId: student.id,
+                fullName: student.fullName,
+                events: [] as Array<{ name: string; point: number }>,
+            };
+    
+            // Создаем объект для хранения ID мероприятий, которые уже есть у студента
+            const eventIdsWithPoints: { [key: number]: number } = {};
+    
+            // Заполняем события студента
+            for (const record of studentRecords) {
+                const event = await this.prisma.event.findUnique({
+                    where: { id: record.eventId },
+                });
+                if (event) {
+                    eventIdsWithPoints[event.id] = record.point; // Сохраняем баллы для мероприятия
+                    studentData.events.push({
+                        name: event.eventName,
+                        point: record.point,
+                    });
+                }
+            }
+    
+            // Проверяем, есть ли мероприятия, которые отсутствуют у студента
+            for (const event of events) {
+                if (!(event.id in eventIdsWithPoints)) {
+                    // Если мероприятия нет, добавляем его с 0 баллами
+                    studentData.events.push({
+                        name: event.eventName,
+                        point: 0,
+                    });
+                }
+            }
+    
+            // Добавляем данные студента в результат
+            result.push(studentData);
+        }
+    
+        return result;
+    }
 }
 

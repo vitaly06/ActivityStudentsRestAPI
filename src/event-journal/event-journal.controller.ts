@@ -10,6 +10,11 @@ export class EventJournalController {
     return this.eventJournalService.getJournalForStudent(id)
   }
 
+  @Get("allStudents")
+  async getJournalForAllStudents(){
+    return this.eventJournalService.allJournalForStudents()
+  }
+
   @Get(":groupeId")
   async getJournalForGroupe(@Param("groupeId") groupeId: number){
     return this.eventJournalService.getJournalForGroupe(groupeId)

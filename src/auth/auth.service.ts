@@ -32,17 +32,24 @@ export class AuthService {
         })
     }
 
-    async login(data: LoginUser): Promise<{access_token: string}>{
-        const checkUser = this.prisma.user.findUnique({
-            where: {login: data.login}
-        })
-        if((await checkUser)?.login == null){
-            throw new BadRequestException("Пользователя с таким логином не существует")
+    async login(data: LoginUser): Promise<{ access_token: string }> {
+        const checkUser = await this.prisma.user.findUnique({
+            where: { login: data.login },
+        });
+
+        if (!checkUser) {
+            throw new BadRequestException('Пользователя с таким логином не существует');
         }
-        if(await bcrypt.compare(data.password, (await checkUser).password)){
-            const payload = {sub: (await checkUser).id}
-            return {access_token: await this.jwtService.signAsync(payload)}
+
+        const isPasswordValid = await bcrypt.compare(data.password, checkUser.password);
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('Неверный пароль');
         }
-        throw new UnauthorizedException("Неверный пароль")
+
+        // Создаем JWT-токен
+        const payload = { sub: checkUser.id };
+        const access_token = await this.jwtService.signAsync(payload);
+
+        return { access_token }; // Возвращаем токен
     }
 }
