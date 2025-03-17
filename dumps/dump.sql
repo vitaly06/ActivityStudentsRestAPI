@@ -124,6 +124,40 @@ ALTER SEQUENCE public."Groupe_id_seq" OWNED BY public."Groupe".id;
 
 
 --
+-- Name: Role; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Role" (
+    id integer NOT NULL,
+    name text NOT NULL
+);
+
+
+ALTER TABLE public."Role" OWNER TO postgres;
+
+--
+-- Name: Role_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."Role_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Role_id_seq" OWNER TO postgres;
+
+--
+-- Name: Role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."Role_id_seq" OWNED BY public."Role".id;
+
+
+--
 -- Name: Student; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -195,6 +229,43 @@ ALTER SEQUENCE public."Student_id_seq" OWNED BY public."Student".id;
 
 
 --
+-- Name: User; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."User" (
+    id integer NOT NULL,
+    "fullName" text NOT NULL,
+    login text NOT NULL,
+    password text NOT NULL,
+    "roleId" integer NOT NULL
+);
+
+
+ALTER TABLE public."User" OWNER TO postgres;
+
+--
+-- Name: User_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public."User_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."User_id_seq" OWNER TO postgres;
+
+--
+-- Name: User_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public."User_id_seq" OWNED BY public."User".id;
+
+
+--
 -- Name: _prisma_migrations; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -234,6 +305,13 @@ ALTER TABLE ONLY public."Groupe" ALTER COLUMN id SET DEFAULT nextval('public."Gr
 
 
 --
+-- Name: Role id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Role" ALTER COLUMN id SET DEFAULT nextval('public."Role_id_seq"'::regclass);
+
+
+--
 -- Name: Student id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -245,6 +323,13 @@ ALTER TABLE ONLY public."Student" ALTER COLUMN id SET DEFAULT nextval('public."S
 --
 
 ALTER TABLE ONLY public."StudentEvent" ALTER COLUMN id SET DEFAULT nextval('public."StudentEvent_id_seq"'::regclass);
+
+
+--
+-- Name: User id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User" ALTER COLUMN id SET DEFAULT nextval('public."User_id_seq"'::regclass);
 
 
 --
@@ -273,6 +358,7 @@ COPY public."Event" (id, "eventName") FROM stdin;
 7	Мастер-класс по деловому этикету и самопрезентации с приглашенным спикером
 8	Выездная съемка видеоролика
 9	Открытая лекция «Как продать свою идею» с приглашенным спикером
+10	Промежуточная аттестация
 \.
 
 
@@ -285,6 +371,18 @@ COPY public."Groupe" (id, "groupeName", "departmentId") FROM stdin;
 2	2бу1	3
 3	2р1	1
 4	3са1	4
+\.
+
+
+--
+-- Data for Name: Role; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Role" (id, name) FROM stdin;
+1	admin
+2	Директор
+3	Зам. директора
+4	Преподаватель
 \.
 
 
@@ -538,6 +636,15 @@ COPY public."StudentEvent" (id, "studentId", "eventId", point) FROM stdin;
 
 
 --
+-- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."User" (id, "fullName", login, password, "roleId") FROM stdin;
+1	Садиков Виталий Дмитриевич	vitaly.sadikov	$2b$10$leK2dKND5tcn90FMjOk5L.bVRnGebdgP3KpZZNLKHAsZODExF2cL6	1
+\.
+
+
+--
 -- Data for Name: _prisma_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -548,6 +655,8 @@ a37b0154-ddfe-4ed1-8124-4358e91cb8ad	044c393207482ed651f9da3ce0afbeb5d0e1507224e
 77fc2f98-0872-4a16-b78a-bac43744c236	825db03439b5f34fbca238dfb949f1063d298ea3167e4b84889885b73ad7f294	2025-03-03 11:44:58.079594+05	20250303064458_add_event	\N	\N	2025-03-03 11:44:58.048913+05	1
 1f08ba22-4304-434f-ad7f-b6277545e492	90283135e6fe2a5d620ad860f3f8878169cf39e7405e67fe25b2a5525fb35769	2025-03-03 12:34:59.394003+05	20250303073459_edit_event	\N	\N	2025-03-03 12:34:59.388372+05	1
 1a32c205-3401-4bef-9439-7121b5cf7e73	f3fa6908fd6e2bd8c15da4fbfeb5e2116ac9cb51e1707b317b0124566b56f4b9	2025-03-10 12:51:22.703483+05	20250310075122_edit_student_event	\N	\N	2025-03-10 12:51:22.687247+05	1
+0f8ff07c-b476-44c3-bd41-e022f4c73c93	580fb9bbeee2d181aa06f10e1a66b9266de6e0792ab2f3b373a3635ccb548e17	2025-03-13 12:46:41.6782+05	20250313074641_add_user	\N	\N	2025-03-13 12:46:41.648662+05	1
+de7aac08-b4f4-4ac9-9898-bb97515e5233	828985e3c11af95f8f8449d11e8eda616be810ca589c89d0512f14968ba3b298	2025-03-14 10:34:52.379458+05	20250314053452_add_roles	\N	\N	2025-03-14 10:34:52.347402+05	1
 \.
 
 
@@ -562,7 +671,7 @@ SELECT pg_catalog.setval('public."Department_id_seq"', 4, true);
 -- Name: Event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Event_id_seq"', 9, true);
+SELECT pg_catalog.setval('public."Event_id_seq"', 10, true);
 
 
 --
@@ -570,6 +679,13 @@ SELECT pg_catalog.setval('public."Event_id_seq"', 9, true);
 --
 
 SELECT pg_catalog.setval('public."Groupe_id_seq"', 4, true);
+
+
+--
+-- Name: Role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."Role_id_seq"', 4, true);
 
 
 --
@@ -584,6 +700,13 @@ SELECT pg_catalog.setval('public."StudentEvent_id_seq"', 380, true);
 --
 
 SELECT pg_catalog.setval('public."Student_id_seq"', 101, true);
+
+
+--
+-- Name: User_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public."User_id_seq"', 1, true);
 
 
 --
@@ -611,6 +734,14 @@ ALTER TABLE ONLY public."Groupe"
 
 
 --
+-- Name: Role Role_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Role"
+    ADD CONSTRAINT "Role_pkey" PRIMARY KEY (id);
+
+
+--
 -- Name: StudentEvent StudentEvent_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -627,6 +758,14 @@ ALTER TABLE ONLY public."Student"
 
 
 --
+-- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id);
+
+
+--
 -- Name: _prisma_migrations _prisma_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -635,10 +774,24 @@ ALTER TABLE ONLY public._prisma_migrations
 
 
 --
+-- Name: Role_name_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "Role_name_key" ON public."Role" USING btree (name);
+
+
+--
 -- Name: StudentEvent_studentId_eventId_key; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE UNIQUE INDEX "StudentEvent_studentId_eventId_key" ON public."StudentEvent" USING btree ("studentId", "eventId");
+
+
+--
+-- Name: User_login_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX "User_login_key" ON public."User" USING btree (login);
 
 
 --
@@ -671,6 +824,14 @@ ALTER TABLE ONLY public."StudentEvent"
 
 ALTER TABLE ONLY public."Student"
     ADD CONSTRAINT "Student_groupeId_fkey" FOREIGN KEY ("groupeId") REFERENCES public."Groupe"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: User User_roleId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES public."Role"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --

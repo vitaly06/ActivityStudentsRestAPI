@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -56,6 +56,61 @@ export class EventJournalService {
             res.push(resultStudent);
         }
         return res; 
+    }
+
+    async getJournalForStudent(studentId: number) {
+        const student = await this.prisma.student.findUnique({
+            where: { id: Number(studentId) }
+        });
+    
+        if (!student) {
+            throw new BadRequestException("Студент с таким ID не найден");
+        }
+    
+        // Получаем все мероприятия
+        const events = await this.prisma.event.findMany();
+    
+        // Получаем записи о мероприятиях для данного студента
+        const studentRecords = await this.prisma.studentEvent.findMany({
+            where: { studentId: Number(studentId) }
+        });
+    
+        // Создаем объект для хранения результата
+        const resultStudent = {
+            studentId: student.id,
+            fullName: student.fullName,
+            events: [] as Array<{ name: string; point: number }>
+        };
+    
+        // Создаем объект для хранения ID мероприятий, которые уже есть у студента
+        const eventIdsWithPoints: { [key: number]: number } = {};
+    
+        // Заполняем события студента
+        for (const record of studentRecords) {
+            const event = await this.prisma.event.findUnique({
+                where: { id: Number(record.eventId) }
+            });
+            if (event) {
+                eventIdsWithPoints[event.id] = record.point; // Сохраняем баллы для мероприятия
+                resultStudent.events.push({
+                    name: event.eventName,
+                    point: record.point
+                });
+            }
+        }
+    
+        // Проверяем, есть ли мероприятия, которые отсутствуют у студента
+        for (const event of events) {
+            if (!(event.id in eventIdsWithPoints)) {
+                // Если мероприятия нет, добавляем его с 0 баллами
+                resultStudent.events.push({
+                    name: event.eventName,
+                    point: 0
+                });
+            }
+        }
+    
+        return resultStudent;
     }
 
     async saveJournal(data: Array<{ studentId: number; events: Array<{ name: string; point: number }> }>) {

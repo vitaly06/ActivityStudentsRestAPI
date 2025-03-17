@@ -12,6 +12,11 @@ export class StudentController {
     return this.studentService.allStudentsByGroupe(id)
   }
 
+  @Get("profile/:studentId")  
+  async getProfileForStudent(@Param("studentId") id: number){
+    return this.studentService.profile(id)
+  }
+
   @Get(":studentId")
   async getStudentById(@Param("studentId") id: number){
     return this.studentService.studentById(id)

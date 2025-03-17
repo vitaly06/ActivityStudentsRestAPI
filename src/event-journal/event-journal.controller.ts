@@ -5,6 +5,11 @@ import { EventJournalService } from './event-journal.service';
 export class EventJournalController {
   constructor(private readonly eventJournalService: EventJournalService) {}
 
+  @Get("student-journal/:studentId")
+  async getJournalForStudent(@Param("studentId") id: number){
+    return this.eventJournalService.getJournalForStudent(id)
+  }
+
   @Get(":groupeId")
   async getJournalForGroupe(@Param("groupeId") groupeId: number){
     return this.eventJournalService.getJournalForGroupe(groupeId)
