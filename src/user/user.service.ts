@@ -1,11 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as jwtDecode from 'jwt-decode';
 
 @Injectable()
 export class UserService {
     constructor(private readonly prisma: PrismaService){}
 
-    async profileForUser (id: number) {
+    
+    async profileForUser (token: string) {
+        const decodeToken = jwtDecode.jwtDecode(token)
+        const id = decodeToken.sub
         const user = await this.prisma.user.findUnique({
             where: { id: Number(id) }
         });
