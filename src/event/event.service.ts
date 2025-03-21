@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Event } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AddEvent } from './event.dto';
 
 @Injectable()
 export class EventService {
@@ -15,6 +16,13 @@ export class EventService {
     async removeEvent(id: number){
         return this.prisma.event.delete({
             where: {id: Number(id)}
+        })
+    }
+
+    async updateEvent(id: number, data: AddEvent): Promise<Event>{
+        return this.prisma.event.update({
+            where: {id: Number(id)},
+            data
         })
     }
 

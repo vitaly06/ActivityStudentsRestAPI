@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GroupeService } from './groupe.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Groupe } from '@prisma/client';
@@ -8,9 +8,14 @@ import { Groupe } from '@prisma/client';
 export class GroupeController {
   constructor(private readonly groupeService: GroupeService) {}
   @Get("all/:departmentId")
-  async allGroupesByDepartment(@Param("departmentId") departmentId: number){
-    return this.groupeService.allGroupesByDepartment(departmentId)
-  }
+async allGroupesByDepartment(
+    @Param("departmentId") departmentId: number,
+    @Query("sort") sort: string = "all",
+    @Query("customRange") customRange?: string
+) {
+    return this.groupeService.allGroupesByDepartment(departmentId, sort, customRange);
+}
+
   @Get("all")
   async allGroupes(): Promise<Groupe[]>{
     return this.groupeService.allGroupes()
@@ -22,9 +27,11 @@ export class GroupeController {
   }
 
   @Get("allCourse/:courseId")
-  async allGroupesByCourse(@Param("courseId") id: number){
-    return this.groupeService.allByCourse(id)
-  }
-
-  
+async allGroupesByCourse(
+    @Param("courseId") courseId: number,
+    @Query("sort") sort: string = "all",
+    @Query("customRange") customRange?: string
+) {
+    return this.groupeService.allByCourse(courseId, sort, customRange);
+}
 }

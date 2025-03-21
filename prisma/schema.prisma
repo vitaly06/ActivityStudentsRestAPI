@@ -25,6 +25,8 @@ model Student{
   id Int @id @default(autoincrement())
   fullName String
   groupeId Int
+  gender String?
+  dateOfBirth String?
   groupe Groupe @relation(fields: [groupeId], references: [id])
   studentEvent StudentEvent[]
 }
@@ -32,7 +34,9 @@ model Student{
 model Event{
   id Int @id @default(autoincrement())
   eventName String
+  eventDate DateTime?
   studentEvent StudentEvent[]
+  eventRating EventRating[]
 }
 
 model StudentEvent {
@@ -52,10 +56,20 @@ model User{
   password String
   roleId Int
   role Role @relation(fields: [roleId], references: [id] )
+  eventRating EventRating[]
 }
 
 model Role{
   id Int @id @default(autoincrement())
   name String @unique
   users User[]
+}
+
+model EventRating{
+  id Int @id @default(autoincrement())
+  eventId Int
+  point Float
+  userId Int
+  event Event @relation(fields: [eventId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }

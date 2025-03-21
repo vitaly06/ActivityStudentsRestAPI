@@ -9,9 +9,10 @@ import { EventModule } from './event/event.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
+import { EventRatingModule } from './event-rating/event-rating.module';
 
 @Module({
-  imports: [StudentModule, GroupeModule, DepartmentModule, EventJournalModule, EventModule, UserModule, AuthModule, RoleModule],
+  imports: [StudentModule, GroupeModule, DepartmentModule, EventJournalModule, EventModule, UserModule, AuthModule, RoleModule, EventRatingModule],
   controllers: [],
   providers: [PrismaClient, PrismaService],
 })

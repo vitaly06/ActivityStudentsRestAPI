@@ -18,7 +18,7 @@ export class StudentService {
         })
     }
 
-    async profile(id: number) {
+    async profile(id: number, sort: string, customRange?: string) {
         const user = await this.prisma.student.findUnique({
             where: { id: Number(id) },
             include: {
@@ -33,14 +33,17 @@ export class StudentService {
         if (!user) {
             throw new BadRequestException("Пользователя с таким id не существует");
         }
-        const journal = this.eventJournalService.getJournalForStudent(id)
+    
+        const journal = await this.eventJournalService.getJournalForStudent(id, sort, customRange); // Передаем customRange
         const result = {
             id: user.id,
             fullName: user.fullName,
             groupeName: user.groupe.groupeName,
             departmentName: user.groupe.department.departmentName,
+            gender: user.gender,
+            dateOfBIrth: user.dateOfBirth,
             course: `${user.groupe.groupeName.charAt(0)} курс`,
-            events: (await journal).events
+            events: journal.events
         };
         return result;
     }
