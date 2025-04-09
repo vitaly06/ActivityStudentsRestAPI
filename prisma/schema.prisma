@@ -17,7 +17,7 @@ model Groupe{
   id Int @id @default(autoincrement())
   groupeName String
   departmentId Int 
-  department Department @relation(fields: [departmentId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   students Student[]
 }
 
@@ -27,7 +27,7 @@ model Student{
   groupeId Int
   gender String?
   dateOfBirth String?
-  groupe Groupe @relation(fields: [groupeId], references: [id])
+  groupe Groupe @relation(fields: [groupeId], references: [id], onDelete: Cascade)
   studentEvent StudentEvent[]
 }
 
@@ -44,8 +44,8 @@ model StudentEvent {
   studentId  Int
   eventId    Int
   point      Int
-  student    Student @relation(fields: [studentId], references: [id])
-  event      Event   @relation(fields: [eventId], references: [id])
+  student    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  event      Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   @@unique([studentId, eventId]) 
 }
 
@@ -55,7 +55,7 @@ model User{
   login String @unique
   password String
   roleId Int
-  role Role @relation(fields: [roleId], references: [id] )
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade )
   eventRating EventRating[]
 }
 
@@ -70,6 +70,6 @@ model EventRating{
   eventId Int
   point Float
   userId Int
-  event Event @relation(fields: [eventId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

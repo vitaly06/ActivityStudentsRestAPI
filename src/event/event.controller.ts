@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { EventService } from './event.service';
 import { Event } from '@prisma/client';
 import { AddEvent } from './event.dto';
@@ -7,23 +15,26 @@ import { AddEvent } from './event.dto';
 export class EventController {
   constructor(private readonly eventService: EventService) {}
 
-  @Post("addEvent")
-  async addEvent(@Body() body: AddEvent): Promise<Event>{
-    return this.eventService.addEvent(body)
+  @Post('addEvent')
+  async addEvent(@Body() body: AddEvent): Promise<Event> {
+    return this.eventService.addEvent(body);
   }
 
-  @Put(":id")
-  async updateEvent(@Param("id") id: number, @Body() body: AddEvent): Promise<Event>{
-    return this.eventService.updateEvent(id, body)
+  @Put(':id')
+  async updateEvent(
+    @Param('id') id: number,
+    @Body() body: AddEvent,
+  ): Promise<Event> {
+    return this.eventService.updateEvent(id, body);
   }
 
-  @Delete(":id")
-  async removeEvent(@Param("id") id: number){
-    return this.eventService.removeEvent(id)
+  @Delete(':id')
+  async removeEvent(@Param('id') id: number) {
+    return this.eventService.removeEvent(id);
   }
 
-  @Get("allEvents")
-  async findAll(): Promise<Event[]>{
-    return this.eventService.findAll()
+  @Get('allEvents')
+  async findAll(): Promise<Event[]> {
+    return this.eventService.findAll();
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { EventRatingService } from './event-rating.service';
 import { CreateEventRatingDto } from './event-rating.dto';
 
@@ -6,9 +6,9 @@ import { CreateEventRatingDto } from './event-rating.dto';
 export class EventRatingController {
   constructor(private readonly eventRatingService: EventRatingService) {}
 
-  @Get("getJournal")
-  async getJournal(){
-    return this,this.eventRatingService.getJournal()
+  @Get("getJournal/:userId")
+  async getJournal(@Param("userId") id: number){
+    return this,this.eventRatingService.getJournal(id)
   }
 
   @Post('saveJournal')

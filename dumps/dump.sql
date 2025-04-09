@@ -715,6 +715,7 @@ de7aac08-b4f4-4ac9-9898-bb97515e5233	828985e3c11af95f8f8449d11e8eda616be810ca589
 665a982f-7a38-47dd-8cec-f0cbb079fd3b	f6248259d67c34b5afe8fb5ac8caac373e751ba59431540f6a7998378d4b76cf	2025-03-18 20:25:04.410612+05	20250318152504_gender_birth	\N	\N	2025-03-18 20:25:04.403245+05	1
 8403c9a1-9078-4281-84a4-4d21b4a19dcd	577b78c7058059b3ac877dd27f0997bf9bee3a404a96499ad6a97d8c8ab7df3b	2025-03-19 10:28:31.546156+05	20250319052831_date_time	\N	\N	2025-03-19 10:28:31.534854+05	1
 1dc12feb-f4e5-444a-9292-0effbfdce25e	0dfbac8416af7fcf556f0e5fdc64a3d9a60be8b69971599676d97dea50faf875	2025-03-21 11:37:26.669518+05	20250321063726_event_rating	\N	\N	2025-03-21 11:37:26.650286+05	1
+8e6f295a-e77c-408e-9311-bc785dc41542	2c168556cca284c128942ad4da087aca3cbbe392d4f3776e7b52d46271b6fda4	2025-03-24 14:24:48.754139+05	20250324092448_final	\N	\N	2025-03-24 14:24:48.731009+05	1
 \.
 
 
@@ -872,7 +873,7 @@ CREATE UNIQUE INDEX "User_login_key" ON public."User" USING btree (login);
 --
 
 ALTER TABLE ONLY public."EventRating"
-    ADD CONSTRAINT "EventRating_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public."Event"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "EventRating_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public."Event"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -880,7 +881,7 @@ ALTER TABLE ONLY public."EventRating"
 --
 
 ALTER TABLE ONLY public."EventRating"
-    ADD CONSTRAINT "EventRating_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "EventRating_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -888,7 +889,7 @@ ALTER TABLE ONLY public."EventRating"
 --
 
 ALTER TABLE ONLY public."Groupe"
-    ADD CONSTRAINT "Groupe_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES public."Department"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Groupe_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES public."Department"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -896,7 +897,7 @@ ALTER TABLE ONLY public."Groupe"
 --
 
 ALTER TABLE ONLY public."StudentEvent"
-    ADD CONSTRAINT "StudentEvent_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public."Event"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "StudentEvent_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES public."Event"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -904,7 +905,7 @@ ALTER TABLE ONLY public."StudentEvent"
 --
 
 ALTER TABLE ONLY public."StudentEvent"
-    ADD CONSTRAINT "StudentEvent_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES public."Student"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "StudentEvent_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES public."Student"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -912,7 +913,7 @@ ALTER TABLE ONLY public."StudentEvent"
 --
 
 ALTER TABLE ONLY public."Student"
-    ADD CONSTRAINT "Student_groupeId_fkey" FOREIGN KEY ("groupeId") REFERENCES public."Groupe"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "Student_groupeId_fkey" FOREIGN KEY ("groupeId") REFERENCES public."Groupe"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -920,7 +921,7 @@ ALTER TABLE ONLY public."Student"
 --
 
 ALTER TABLE ONLY public."User"
-    ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES public."Role"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+    ADD CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES public."Role"(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

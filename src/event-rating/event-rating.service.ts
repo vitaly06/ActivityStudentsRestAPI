@@ -6,32 +6,44 @@ import { CreateEventRatingDto } from './event-rating.dto';
 export class EventRatingService {
     constructor(private readonly prisma: PrismaService){}
 
-    async getJournal() {
+    async getJournal(id) {
         // Получаем все мероприятия
         const events = await this.prisma.event.findMany();
     
-        // Получаем все записи рейтингов
-        const eventRatings = await this.prisma.eventRating.findMany();
+        // Получаем все записи рейтингов для всех мероприятий
+        const allEventRatings = await this.prisma.eventRating.findMany();
+    
+        // Получаем оценки конкретного пользователя
+        const userEventRatings = await this.prisma.eventRating.findMany({
+            where: { userId: Number(id) }
+        });
     
         // Создаем объект для хранения данных о рейтингах
-        const ratingMap: { [eventId: number]: { total: number; count: number } } = {};
+        const ratingMap: { [eventId: number]: { total: number; count: number; userRating: number | null } } = {};
     
-        // Заполняем объект ratingMap данными из eventRatings
-        for (const rating of eventRatings) {
+        // Заполняем объект ratingMap данными из allEventRatings (общие данные)
+        for (const rating of allEventRatings) {
             if (!ratingMap[rating.eventId]) {
-                ratingMap[rating.eventId] = { total: 0, count: 0 };
+                ratingMap[rating.eventId] = { total: 0, count: 0, userRating: null };
             }
-            ratingMap[rating.eventId].total += rating.point;
-            ratingMap[rating.eventId].count += 1;
+            ratingMap[rating.eventId].total += rating.point; // Суммируем все оценки
+            ratingMap[rating.eventId].count += 1; // Считаем количество оценок
+        }
+    
+        // Добавляем оценку пользователя в ratingMap
+        for (const userRating of userEventRatings) {
+            if (ratingMap[userRating.eventId]) {
+                ratingMap[userRating.eventId].userRating = userRating.point;
+            }
         }
     
         // Формируем результат
         const result = events.map(event => {
-            const ratingData = ratingMap[event.id] || { total: 0, count: 0 };
+            const ratingData = ratingMap[event.id] || { total: 0, count: 0, userRating: null };
             return {
                 eventId: event.id,
                 eventName: event.eventName,
-                rating: ratingData.count > 0 ? ratingData.total / ratingData.count : 0, // Средний рейтинг
+                rating: ratingData.userRating, // Оценка пользователя
                 all: ratingData.total, // Общая сумма баллов
                 count: ratingData.count, // Количество оценок
             };
