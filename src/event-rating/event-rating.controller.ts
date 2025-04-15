@@ -6,9 +6,9 @@ import { CreateEventRatingDto } from './event-rating.dto';
 export class EventRatingController {
   constructor(private readonly eventRatingService: EventRatingService) {}
 
-  @Get("getJournal/:userId")
-  async getJournal(@Param("userId") id: number){
-    return this,this.eventRatingService.getJournal(id)
+  @Get('getJournal/:userId')
+  async getJournal(@Param('userId') id: number) {
+    return this, this.eventRatingService.getJournal(id);
   }
 
   @Post('saveJournal')

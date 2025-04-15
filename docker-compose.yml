@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:13
@@ -11,19 +13,27 @@ services:
     volumes:
       - ./dumps:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   app:
     build: .
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_NAME: ActivityStudents
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/ActivityStudents?schema=public"
+      NODE_ENV: production
+      # Дополнительные переменные если нужно
+      JWT: "37e838183c7026269104cc968e28a22938a1d3af6f3d91717c50e7738ab55193ff7697c7f8da01e40e050cc4416b2f2f9ec4af03ca21b133aa423c6886861be447710d31259b45ea543be916b867353f497d9cca3f42d932b986758af759b9e5951c6fee95fd0da65278be8ed10f7b768ba42a84c491959c7051d13c7ac199ea31772de1a9e3423b7c94f8e9fa7c4f5b307b16b5dd38c8cd9f46904ba0f321ab43d94fc142ac050a6201e61007f2947be8e710bc39152a4d6bd1eb8dca89c6c3c7ad10089d16a2da158b1f322f6bb91c2b250a5194c7824f0ba5c466a0536dda981d90270283ed2a77718624be2f406bf4079c6575882814345ef43cf2b3be3e" 
+    volumes:
+      - ./src:/usr/src/app/src # Только для разработки
+    restart: unless-stopped
 
 volumes:
   postgres_data:

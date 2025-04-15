@@ -1,29 +1,39 @@
-# Используем официальный образ Node.js
-FROM node:18
+# Этап сборки (builder)
+FROM node:18-alpine AS builder
 
-# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
-# Копируем файлы package.json и package-lock.json (если есть)
+# Копируем только файлы, необходимые для установки зависимостей
 COPY package*.json ./
-
-# Устанавливаем зависимости
-RUN npm install --legacy-peer-deps
-
-# Копируем файл .env в контейнер
-COPY .env ./
-
-# Копируем папку prisma в контейнер
 COPY prisma ./prisma
 
-# Генерируем Prisma Client
-RUN npx prisma generate
+# Устанавливаем зависимости с учетом peerDependencies
+RUN npm ci --legacy-peer-deps && \
+    npx prisma generate
 
-# Копируем остальные файлы приложения в контейнер
+# Копируем все остальные файлы
 COPY . .
 
-# Открываем порт 3000
+# Билдим приложение
+RUN npm run build
+
+# Этап production
+FROM node:18-alpine AS production
+
+WORKDIR /usr/src/app
+
+# Копируем только необходимые файлы из builder
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/src/app/.env ./
+
+# Устанавливаем только production зависимости с тем же флагом
+RUN npm prune --production --legacy-peer-deps
+
+# Открываем порт приложения
 EXPOSE 3000
 
 # Запускаем приложение
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]

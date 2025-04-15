@@ -6,15 +6,7 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 1. Сначала cookie-parser (должен быть самым первым!)
   app.use(cookieParser());
-
-  // 2. Логирование для отладки
-  app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-    console.log('Cookies:', req.cookies);
-    next();
-  });
 
   // 3. Настройка CORS (должна быть до Swagger)
   app.enableCors({

@@ -7,69 +7,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Department{
-  id Int @id @default(autoincrement())
+model Department {
+  id             Int      @id @default(autoincrement())
   departmentName String
-  groupes Groupe[]
+  groupes        Groupe[]
 }
 
-model Groupe{
-  id Int @id @default(autoincrement())
-  groupeName String
-  departmentId Int 
-  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  students Student[]
+model Groupe {
+  id           Int        @id @default(autoincrement())
+  groupeName   String
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  students     Student[]
 }
 
-model Student{
-  id Int @id @default(autoincrement())
-  fullName String
-  groupeId Int
-  gender String?
-  dateOfBirth String?
-  groupe Groupe @relation(fields: [groupeId], references: [id], onDelete: Cascade)
+model Student {
+  id           Int            @id @default(autoincrement())
+  fullName     String
+  groupeId     Int
+  gender       String?
+  dateOfBirth  String?
+  groupe       Groupe         @relation(fields: [groupeId], references: [id], onDelete: Cascade)
   studentEvent StudentEvent[]
 }
 
-model Event{
-  id Int @id @default(autoincrement())
-  eventName String
-  eventDate DateTime?
+model Event {
+  id           Int            @id @default(autoincrement())
+  eventName    String
+  eventDate    DateTime?
+  eventTypeId  Int?
+  userId       Int?
   studentEvent StudentEvent[]
-  eventRating EventRating[]
+  eventRating  EventRating[]
+  typeEvent    EventType?     @relation(fields: [eventTypeId], references: [id], onDelete: Cascade)
+  user         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model StudentEvent {
-  id         Int    @id @default(autoincrement())
-  studentId  Int
-  eventId    Int
-  point      Int
-  student    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  event      Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  @@unique([studentId, eventId]) 
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  eventId   Int
+  point     Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  event     Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, eventId])
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  fullName String
-  login String @unique
-  password String
-  roleId Int
-  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade )
+model User {
+  id          Int           @id @default(autoincrement())
+  fullName    String
+  login       String        @unique
+  password    String
+  roleId      Int
+  role        Role          @relation(fields: [roleId], references: [id], onDelete: Cascade)
   eventRating EventRating[]
+  Event       Event[]
 }
 
-model Role{
-  id Int @id @default(autoincrement())
-  name String @unique
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
   users User[]
 }
 
-model EventRating{
-  id Int @id @default(autoincrement())
+model EventRating {
+  id      Int   @id @default(autoincrement())
   eventId Int
-  point Float
-  userId Int
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  point   Float
+  userId  Int
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EventType {
+  id       Int     @id @default(autoincrement())
+  typeName String  @unique
+  Event    Event[]
 }

@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
 import { EventRatingModule } from './event-rating/event-rating.module';
 import { CheckAdmin } from './middlewares/admin.middlewares';
+import { EventTypeModule } from './event-type/event-type.module';
 
 @Module({
   imports: [
@@ -28,19 +29,20 @@ import { CheckAdmin } from './middlewares/admin.middlewares';
     AuthModule,
     RoleModule,
     EventRatingModule,
+    EventTypeModule,
   ],
   controllers: [],
   providers: [PrismaClient, PrismaService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(CheckAdmin).forRoutes(
-      { path: 'event/addEvent', method: RequestMethod.POST },
-      { path: 'event/:id', method: RequestMethod.DELETE },
-      { path: 'event/:id', method: RequestMethod.PUT },
-      // { path: 'event', method: RequestMethod.PUT },
-      // { path: 'event', method: RequestMethod.DELETE },
-      { path: 'auth/register', method: RequestMethod.POST },
-    );
+    consumer
+      .apply(CheckAdmin)
+      .forRoutes(
+        { path: 'event/addEvent', method: RequestMethod.POST },
+        { path: 'event/:id', method: RequestMethod.DELETE },
+        { path: 'event/:id', method: RequestMethod.PUT },
+        { path: 'auth/register', method: RequestMethod.POST },
+      );
   }
 }

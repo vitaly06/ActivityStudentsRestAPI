@@ -40,7 +40,7 @@ export class EventJournalService {
         if (event) {
           eventIdsWithPoints[event.id] = record.point;
           resultStudent.events.push({
-            name: event.eventName,
+            name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
             point: record.point,
             date: this.formatDate(event.eventDate),
           });
@@ -196,7 +196,7 @@ export class EventJournalService {
       if (event) {
         eventIdsWithPoints[event.id] = record.point; // Сохраняем баллы для мероприятия
         resultStudent.events.push({
-          name: event.eventName,
+          name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
           point: record.point,
           date: this.formatDate(event.eventDate), // Форматируем дату
         });
@@ -208,7 +208,7 @@ export class EventJournalService {
       if (!(event.id in eventIdsWithPoints)) {
         // Если мероприятия нет, добавляем его с 0 баллами
         resultStudent.events.push({
-          name: event.eventName,
+          name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
           point: 0,
           date: this.formatDate(event.eventDate), // Форматируем дату
         });
@@ -384,7 +384,7 @@ export class EventJournalService {
     // Инициализируем сумматор баллов для каждого мероприятия
     events.forEach((event) => {
       eventPointsSummary[event.id] = {
-        name: event.eventName,
+        name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
         point: 0,
         date: this.formatDate(event.eventDate),
       };
@@ -418,7 +418,7 @@ export class EventJournalService {
         if (event) {
           eventIdsWithPoints[event.id] = record.point;
           studentData.events.push({
-            name: event.eventName,
+            name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
             point: record.point,
             date: this.formatDate(event.eventDate),
           });
@@ -431,7 +431,7 @@ export class EventJournalService {
       for (const event of events) {
         if (!(event.id in eventIdsWithPoints)) {
           studentData.events.push({
-            name: event.eventName,
+            name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
             point: 0,
             date: this.formatDate(event.eventDate),
           });

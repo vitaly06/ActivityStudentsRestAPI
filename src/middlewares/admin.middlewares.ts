@@ -18,8 +18,6 @@ export class CheckAdmin implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     console.log('CheckAdmin middleware triggered for:', req.path);
     const token = req.cookies?.access_token;
-    console.log(token);
-    console.log('1');
     if (!token) {
       throw new UnauthorizedException('Вы не авторизованы');
     }
@@ -33,7 +31,6 @@ export class CheckAdmin implements NestMiddleware {
       });
 
       if (!user || user.role.name !== 'admin') {
-        // Исправлено условие
         throw new ForbiddenException('Требуются права администратора');
       }
 
