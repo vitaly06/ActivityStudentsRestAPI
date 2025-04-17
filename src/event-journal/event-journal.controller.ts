@@ -15,6 +15,11 @@ export class EventJournalController {
     return this.eventJournalService.allJournalForStudents();
   }
 
+  @Get('totalPoints')
+  async totalPointsAllStudents() {
+    return this.eventJournalService.totalPoints();
+  }
+
   @Get(':groupeId')
   async getJournalForGroupe(
     @Param('groupeId') groupeId: number,

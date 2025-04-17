@@ -368,46 +368,30 @@ export class EventJournalService {
     }
   }
 
-  async allJournalForStudents() {
+  // Общее количество баллов
+  async totalPoints() {
     const students = await this.prisma.student.findMany();
     const events = await this.prisma.event.findMany();
-
-    // Создаем объект для хранения общего количества баллов по мероприятиям
-    const eventPointsSummary: {
+    const pointSummary: {
       [eventId: number]: {
         name: string;
         point: number;
         date: string;
       };
     } = {};
-
-    // Инициализируем сумматор баллов для каждого мероприятия
     events.forEach((event) => {
-      eventPointsSummary[event.id] = {
-        name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
+      pointSummary[event.id] = {
+        name: `${event.eventName} (${this.formatDate(event.eventDate)})`,
         point: 0,
         date: this.formatDate(event.eventDate),
       };
     });
-
-    const studentsData: Array<{
-      studentId: number;
-      fullName: string;
-      events: Array<{ name: string; point: number; date: string }>;
-    }> = [];
 
     // Обрабатываем каждого студента
     for (const student of students) {
       const studentRecords = await this.prisma.studentEvent.findMany({
         where: { studentId: student.id },
       });
-
-      const studentData = {
-        studentId: student.id,
-        fullName: student.fullName,
-        events: [] as Array<{ name: string; point: number; date: string }>,
-      };
-
       const eventIdsWithPoints: { [key: number]: number } = {};
 
       // Заполняем события студента и суммируем баллы
@@ -417,54 +401,13 @@ export class EventJournalService {
         });
         if (event) {
           eventIdsWithPoints[event.id] = record.point;
-          studentData.events.push({
-            name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
-            point: record.point,
-            date: this.formatDate(event.eventDate),
-          });
-          // Добавляем баллы к общему количеству
-          eventPointsSummary[event.id].point += record.point;
+          pointSummary[event.id].point += record.point;
         }
       }
-
-      // Добавляем отсутствующие мероприятия с 0 баллами
-      for (const event of events) {
-        if (!(event.id in eventIdsWithPoints)) {
-          studentData.events.push({
-            name: `${event.eventName} ${this.formatDate(event.eventDate)}`,
-            point: 0,
-            date: this.formatDate(event.eventDate),
-          });
-        }
-      }
-
-      // Сортируем события
-      const attestationEvents = studentData.events.filter((event) =>
-        event.name.toLowerCase().includes('аттестация'),
-      );
-      const otherEvents = studentData.events.filter(
-        (event) => !event.name.toLowerCase().includes('аттестация'),
-      );
-
-      attestationEvents.sort(
-        (a, b) =>
-          new Date(b.date.split('.').reverse().join('-')).getTime() -
-          new Date(a.date.split('.').reverse().join('-')).getTime(),
-      );
-      otherEvents.sort(
-        (a, b) =>
-          new Date(b.date.split('.').reverse().join('-')).getTime() -
-          new Date(a.date.split('.').reverse().join('-')).getTime(),
-      );
-
-      studentsData.push({
-        ...studentData,
-        events: [...attestationEvents, ...otherEvents],
-      });
     }
 
     // Преобразуем объект summary в массив объектов в требуемом формате
-    const summaryEvents = Object.values(eventPointsSummary);
+    const summaryEvents = Object.values(pointSummary);
 
     // Сортируем итоговые события так же, как у студентов
     const attestationSummary = summaryEvents.filter((event) =>
@@ -487,6 +430,81 @@ export class EventJournalService {
 
     const sortedSummary = [...attestationSummary, ...otherSummary];
 
-    return [studentsData, { events: sortedSummary }];
+    return [{ events: sortedSummary }];
+  }
+
+  async allJournalForStudents() {
+    // Загружаем все необходимые данные за минимальное количество запросов
+    const [students, events, studentEvents] = await Promise.all([
+      this.prisma.student.findMany({
+        select: { id: true, fullName: true },
+      }),
+      this.prisma.event.findMany({
+        select: { id: true, eventName: true, eventDate: true },
+      }),
+      this.prisma.studentEvent.findMany({
+        select: { studentId: true, eventId: true, point: true },
+      }),
+    ]);
+
+    // Создаем мапу для быстрого доступа к событиям
+    const eventsMap = new Map(
+      events.map((event) => [
+        event.id,
+        {
+          name: event.eventName,
+          date: this.formatDate(event.eventDate),
+        },
+      ]),
+    );
+
+    // Создаем мапу для быстрого доступа к баллам студентов
+    const studentEventsMap = new Map<number, Map<number, number>>();
+
+    for (const se of studentEvents) {
+      if (!studentEventsMap.has(se.studentId)) {
+        studentEventsMap.set(se.studentId, new Map());
+      }
+      studentEventsMap.get(se.studentId)!.set(se.eventId, se.point);
+    }
+
+    // Формируем результат
+    return students.map((student) => {
+      const studentPoints = studentEventsMap.get(student.id) || new Map();
+
+      const eventsData = events.map((event) => {
+        const formattedDate = this.formatDate(event.eventDate);
+        return {
+          name: `${event.eventName} ${formattedDate}`,
+          point: studentPoints.get(event.id) || 0,
+          date: formattedDate,
+        };
+      });
+
+      // Разделяем и сортируем события
+      const attestationEvents = eventsData.filter((e) =>
+        e.name.toLowerCase().includes('аттестация'),
+      );
+      const otherEvents = eventsData.filter(
+        (e) => !e.name.toLowerCase().includes('аттестация'),
+      );
+
+      attestationEvents.sort(
+        (a, b) =>
+          new Date(b.date.split('.').reverse().join('-')).getTime() -
+          new Date(a.date.split('.').reverse().join('-')).getTime(),
+      );
+      otherEvents.sort(
+        (a, b) =>
+          new Date(b.date.split('.').reverse().join('-')).getTime() -
+          new Date(a.date.split('.').reverse().join('-')).getTime(),
+      );
+
+      return {
+        studentId: student.id,
+        fullName: student.fullName,
+        events: [...attestationEvents, ...otherEvents],
+      };
+    });
   }
 }
