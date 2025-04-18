@@ -437,7 +437,7 @@ export class EventJournalService {
     // Загружаем все необходимые данные за минимальное количество запросов
     const [students, events, studentEvents] = await Promise.all([
       this.prisma.student.findMany({
-        select: { id: true, fullName: true },
+        select: { id: true, fullName: true, groupe: true },
       }),
       this.prisma.event.findMany({
         select: { id: true, eventName: true, eventDate: true },
@@ -503,6 +503,7 @@ export class EventJournalService {
       return {
         studentId: student.id,
         fullName: student.fullName,
+        groupe: student.groupe.groupeName,
         events: [...attestationEvents, ...otherEvents],
       };
     });

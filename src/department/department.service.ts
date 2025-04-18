@@ -6,7 +6,6 @@ export class DepartmentService {
   constructor(private readonly prisma: PrismaService) {}
 
   async allDepartments(sort: string = 'all', customRange?: string) {
-    // Получаем все департаменты с группами и студентами
     const allDepartments = await this.prisma.department.findMany({
       include: {
         groupes: {
