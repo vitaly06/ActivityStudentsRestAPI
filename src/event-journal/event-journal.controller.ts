@@ -11,8 +11,11 @@ export class EventJournalController {
   }
 
   @Get('allStudents')
-  async getJournalForAllStudents() {
-    return this.eventJournalService.allJournalForStudents();
+  async getJournalForAllStudents(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.eventJournalService.allJournalForStudents(page, limit);
   }
 
   @Get('totalPoints')

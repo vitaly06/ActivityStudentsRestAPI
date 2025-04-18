@@ -433,7 +433,7 @@ export class EventJournalService {
     return [{ events: sortedSummary }];
   }
 
-  async allJournalForStudents() {
+  async allJournalForStudents(page: number = 1, limit: number = 10) {
     // Загружаем все необходимые данные за минимальное количество запросов
     const [students, events, studentEvents] = await Promise.all([
       this.prisma.student.findMany({
@@ -468,8 +468,8 @@ export class EventJournalService {
       studentEventsMap.get(se.studentId)!.set(se.eventId, se.point);
     }
 
-    // Формируем результат
-    return students.map((student) => {
+    // Формируем полный результат
+    const fullResult = students.map((student) => {
       const studentPoints = studentEventsMap.get(student.id) || new Map();
 
       const eventsData = events.map((event) => {
@@ -507,5 +507,21 @@ export class EventJournalService {
         events: [...attestationEvents, ...otherEvents],
       };
     });
+
+    // Применяем пагинацию
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const paginatedResult = fullResult.slice(startIndex, endIndex);
+
+    // return {
+    //   data: paginatedResult,
+    //   meta: {
+    //     totalItems: fullResult.length,
+    //     itemsPerPage: limit,
+    //     currentPage: page,
+    //     totalPages: Math.ceil(fullResult.length / limit),
+    //   },
+    // };
+    return [paginatedResult];
   }
 }
