@@ -517,10 +517,10 @@ COPY public."Groupe" (id, "groupeName", "departmentId") FROM stdin;
 --
 
 COPY public."Role" (id, name) FROM stdin;
-1	admin
 2	Директор
 3	Зам. директора
 4	Преподаватель
+1	Администратор
 \.
 
 

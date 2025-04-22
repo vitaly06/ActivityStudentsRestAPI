@@ -30,7 +30,7 @@ export class CheckAdmin implements NestMiddleware {
         },
       });
 
-      if (!user || user.role.name !== 'admin') {
+      if (!user || user.role.name !== 'Администратор') {
         throw new ForbiddenException('Требуются права администратора');
       }
 
