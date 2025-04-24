@@ -18,6 +18,7 @@ import { EventRatingModule } from './event-rating/event-rating.module';
 import { CheckAdmin } from './middlewares/admin.middlewares';
 import { EventTypeModule } from './event-type/event-type.module';
 import { TopModule } from './top/top.module';
+import { FiltersModule } from './filters/filters.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TopModule } from './top/top.module';
     EventRatingModule,
     EventTypeModule,
     TopModule,
+    FiltersModule,
   ],
   controllers: [],
   providers: [PrismaClient, PrismaService],
