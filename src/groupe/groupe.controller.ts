@@ -7,18 +7,6 @@ import { Groupe } from '@prisma/client';
 @Controller('groupe')
 export class GroupeController {
   constructor(private readonly groupeService: GroupeService) {}
-  @Get('all/:departmentId')
-  async allGroupesByDepartment(
-    @Param('departmentId') departmentId: number,
-    @Query('sort') sort: string = 'all',
-    @Query('customRange') customRange?: string,
-  ) {
-    return this.groupeService.allGroupesByDepartment(
-      departmentId,
-      sort,
-      customRange,
-    );
-  }
 
   @Get('all')
   async allGroupes(): Promise<Groupe[]> {

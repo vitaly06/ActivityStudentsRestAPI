@@ -23,19 +23,6 @@ export class EventJournalController {
     return this.eventJournalService.totalPoints();
   }
 
-  @Get(':groupeId')
-  async getJournalForGroupe(
-    @Param('groupeId') groupeId: number,
-    @Query('sort') sort: string = 'all',
-    @Query('customRange') customRange?: string,
-  ) {
-    return this.eventJournalService.getJournalForGroupe(
-      groupeId,
-      sort,
-      customRange,
-    );
-  }
-
   @Post('save-journal')
   async saveJournal(
     @Body()

@@ -7,21 +7,33 @@ export class FiltersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getFilteredData(
-    type: 'journal' | 'departments' | 'groupes',
+    type: 'journal' | 'departments' | 'groupes' | 'course',
     id?: number,
     sort: string = 'all',
     customRange?: string,
   ) {
     switch (type) {
       case 'journal':
+        if (!id) throw new Error('ID группы обязателен для журнала');
         return this.getJournalForGroupe(id, sort, customRange);
+
       case 'departments':
+        // Для отделений можно фильтровать по курсу
         return this.allDepartments(sort, customRange);
+
       case 'groupes':
+        if (!id) throw new Error('ID отделения обязательно для групп');
+        // Для групп конкретного отделения можно фильтровать по курсу
         return this.allGroupesByDepartment(id, sort, customRange);
+
+      case 'course':
+        if (!id) throw new Error('Номер курса обязателен');
+        // Получаем все группы указанного курса
+        return this.getGroupsByCourse(id, sort, customRange);
+
       default:
         throw new Error(
-          'Неверный тип данных. Допустимые значения: journal, departments, groupes',
+          'Неверный тип данных. Допустимые значения: journal, departments, groupes, course',
         );
     }
   }
@@ -50,8 +62,8 @@ export class FiltersService {
       });
 
       const resultStudent = {
-        studentId: student.id,
-        fullName: student.fullName,
+        id: student.id,
+        name: student.fullName,
         events: [] as Array<{ name: string; point: number; date: string }>,
       };
 
@@ -143,7 +155,7 @@ export class FiltersService {
 
         return {
           id: department.id,
-          departmentName: department.departmentName,
+          name: department.departmentName,
           events: sortedEvents,
         };
       }),
@@ -203,12 +215,83 @@ export class FiltersService {
 
         return {
           id: groupe.id,
-          groupeName: groupe.groupeName,
+          name: groupe.groupeName,
           events: sortedEvents,
         };
       }),
     );
 
     return result;
+  }
+
+  private async getGroupsByCourse(
+    course: number,
+    sort: string = 'all',
+    customRange?: string,
+  ) {
+    // 1. Получаем все группы указанного курса
+    const groupes = await this.prisma.groupe.findMany({
+      where: {
+        groupeName: {
+          startsWith: course.toString(), // Ищем группы, где название начинается с цифры курса
+        },
+      },
+      include: {
+        department: true,
+        students: {
+          include: {
+            studentEvent: {
+              include: {
+                event: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // 2. Получаем все мероприятия
+    const allEvents = await this.prisma.event.findMany();
+
+    // 3. Формируем результат
+    const result = await Promise.all(
+      groupes.map(async (groupe) => {
+        // Считаем сумму баллов для группы
+        let totalPoints = 0;
+        const eventPoints: { [key: string]: number } = {};
+
+        groupe.students.forEach((student) => {
+          student.studentEvent.forEach((event) => {
+            totalPoints += event.point;
+            if (!eventPoints[event.eventId]) {
+              eventPoints[event.eventId] = 0;
+            }
+            eventPoints[event.eventId] += event.point;
+          });
+        });
+
+        // Формируем мероприятия группы
+        const groupeEvents = allEvents.map((event) =>
+          Filter.createEvent(
+            event.eventName,
+            event.eventDate,
+            eventPoints[event.id] || 0,
+          ),
+        );
+
+        return {
+          groupeId: groupe.id,
+          groupeName: groupe.groupeName,
+          department: groupe.department.departmentName,
+          totalPoints, // Общая сумма баллов группы
+          events: Filter.sort(groupeEvents, sort, customRange), // Отсортированные мероприятия
+        };
+      }),
+    );
+
+    return {
+      course,
+      groups: result,
+    };
   }
 }

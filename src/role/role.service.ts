@@ -4,9 +4,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RoleService {
-    constructor(private readonly prisma: PrismaService){}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async allRoles(): Promise<Role[]>{
-        return this.prisma.role.findMany()
-    }
+  async allRoles(): Promise<Role[]> {
+    return this.prisma.role.findMany();
+  }
 }

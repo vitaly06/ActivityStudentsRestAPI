@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { DepartmentService } from './department.service';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { Department } from '@prisma/client';
 
 @ApiTags('Отделение')
 @Controller('department')
@@ -8,12 +9,8 @@ export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
   @Get('all')
-  @ApiResponse({ status: 200, description: 'Получение всех отделений' })
-  async allDepartments(
-    @Query('sort') sort: string = 'all',
-    @Query('customRange') customRange?: string,
-  ) {
-    return this.departmentService.allDepartments(sort, customRange);
+  async allDepartments(): Promise<Department[]> {
+    return this.departmentService.findAll();
   }
 
   @Get(':id')

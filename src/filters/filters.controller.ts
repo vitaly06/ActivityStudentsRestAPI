@@ -24,13 +24,14 @@ export class FiltersController {
   })
   @ApiParam({
     name: 'type',
-    enum: ['journal', 'departments', 'groupes'],
+    enum: ['journal', 'departments', 'groupes', 'course'],
     description: 'Тип данных для фильтрации',
   })
   @ApiQuery({
     name: 'id',
     required: false,
-    description: 'ID группы (для journal) или департамента (для groupes)',
+    description:
+      'ID группы (для journal) или департамента (для groupes), или номер курса',
   })
   @ApiQuery({
     name: 'sort',
@@ -45,14 +46,17 @@ export class FiltersController {
       'Кастомный диапазон дат в формате DD.MM.YYYY-DD.MM.YYYY (для sort=custom)',
   })
   async getFilteredData(
-    @Param('type') type: 'journal' | 'departments' | 'groupes',
+    @Param('type') type: 'journal' | 'departments' | 'groupes' | 'course',
     @Query('id') id?: string,
     @Query('sort') sort: string = 'all',
     @Query('customRange') customRange?: string,
   ) {
     try {
-      // Проверяем, что id передан, если это требуется
-      if ((type === 'journal' || type === 'groupes') && !id) {
+      // Проверяем обязательные параметры для каждого типа
+      if (
+        (type === 'journal' || type === 'groupes' || type === 'course') &&
+        !id
+      ) {
         throw new HttpException(
           `ID обязателен для типа ${type}`,
           HttpStatus.BAD_REQUEST,

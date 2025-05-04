@@ -5,9 +5,9 @@ import { Role } from '@prisma/client';
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
-  
-  @Get("all-roles")
-  async allRoles(): Promise<Role[]>{
-    return this.roleService.allRoles()
+
+  @Get('all-roles')
+  async allRoles(): Promise<Role[]> {
+    return this.roleService.allRoles();
   }
 }

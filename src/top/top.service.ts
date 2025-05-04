@@ -61,7 +61,7 @@ export class TopService {
 
           return {
             groupId: group.id,
-            groupName: group.groupeName,
+            name: group.groupeName,
             departmentName: group.department.departmentName,
             totalScore: totalScore,
           };
@@ -101,7 +101,7 @@ export class TopService {
 
           return {
             departmentId: department.id,
-            departmentName: department.departmentName,
+            name: department.departmentName,
             totalScore: departmentTotalScore,
             totalGroups: department.groupes.length,
             totalStudents: totalStudents,
@@ -121,7 +121,7 @@ export class TopService {
           },
         });
         const groupesFromDepartment = (await groupes).filter((groupe) => {
-          if (groupe.department.departmentName == secondQuery) {
+          if (groupe.department.id == secondQuery) {
             return groupe;
           }
         });
@@ -138,7 +138,7 @@ export class TopService {
 
           return {
             groupId: group.id,
-            groupName: group.groupeName,
+            name: group.groupeName,
             totalScore: totalScore,
           };
         });
@@ -146,7 +146,7 @@ export class TopService {
         return result.sort((a, b) => b.totalScore - a.totalScore);
       case 'groupe':
         const groupe = await this.prisma.groupe.findFirst({
-          where: { groupeName: secondQuery },
+          where: { id: Number(secondQuery) },
           include: {
             students: {
               include: {
@@ -164,7 +164,7 @@ export class TopService {
           }, 0);
           return {
             studentId: student.id,
-            fullName: student.fullName,
+            name: student.fullName,
             totalScore: totalScore,
           };
         });
@@ -198,7 +198,7 @@ export class TopService {
 
           return {
             groupId: group.id,
-            groupName: group.groupeName,
+            name: group.groupeName,
             totalScore: totalScore,
           };
         });
