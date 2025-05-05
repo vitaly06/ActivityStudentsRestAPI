@@ -469,6 +469,144 @@ COPY public."Event" (id, "eventName", "eventDate", "eventTypeId", "userId") FROM
 --
 
 COPY public."EventRating" (id, "eventId", point, "userId") FROM stdin;
+1	29	0.3	1
+2	30	0.1	1
+3	32	0.9	1
+4	33	1	1
+5	34	0	1
+6	35	0.8	1
+7	36	0.1	1
+8	38	0.9	1
+9	39	1	1
+10	44	0.8	1
+11	45	0.4	1
+12	41	0.1	1
+13	42	0.8	1
+14	43	0.7	1
+15	31	0.2	1
+16	37	0.4	1
+17	46	0.8	1
+18	47	0.8	1
+19	48	0.8	1
+20	49	0.8	1
+21	50	0.1	1
+22	51	0.4	1
+23	40	0.1	1
+24	29	0.6	5
+25	30	0.5	5
+26	32	0.2	5
+27	33	0.4	5
+28	34	0.6	5
+29	35	0.2	5
+30	36	0.1	5
+31	38	0.6	5
+32	39	0	5
+33	44	0.3	5
+34	45	0.5	5
+35	41	0.1	5
+36	42	0.2	5
+37	43	0.7	5
+38	31	0.7	5
+39	37	0.7	5
+40	46	0.3	5
+41	47	0	5
+42	48	0.7	5
+43	49	0.1	5
+44	50	0.5	5
+45	51	0.3	5
+46	40	0.4	5
+47	29	0.3	6
+48	30	0.2	6
+49	32	0.4	6
+50	33	0.1	6
+51	34	0.3	6
+52	35	0.6	6
+53	36	0.6	6
+54	38	0.6	6
+55	39	0.6	6
+56	44	0.6	6
+57	45	0.7	6
+58	41	0.8	6
+59	42	0	6
+60	43	0.3	6
+61	31	0.5	6
+62	37	0.2	6
+63	46	0.4	6
+64	47	0.3	6
+65	48	0.3	6
+66	49	0.6	6
+67	50	0.5	6
+68	51	0.5	6
+69	40	0.3	6
+70	29	0.4	7
+71	30	0.4	7
+72	32	0.3	7
+73	33	0.8	7
+74	34	0.8	7
+75	35	0.3	7
+76	36	0.1	7
+77	38	0.6	7
+78	39	0.3	7
+79	44	0.6	7
+80	45	0.1	7
+81	41	0.7	7
+82	42	0.3	7
+83	43	0.6	7
+84	31	0.3	7
+85	37	0.8	7
+86	46	0.5	7
+87	47	0.1	7
+88	48	0.4	7
+89	49	0.7	7
+90	50	0.6	7
+91	51	0.2	7
+92	40	0.2	7
+93	29	0.1	8
+94	30	0.4	8
+95	32	0.2	8
+96	33	0	8
+97	34	0.3	8
+98	35	0	8
+99	36	0.2	8
+100	38	0.3	8
+101	39	0.6	8
+102	44	0.5	8
+103	45	0.2	8
+104	41	0.3	8
+105	42	0.2	8
+106	43	0.5	8
+107	31	0.3	8
+108	37	0.3	8
+109	46	0.2	8
+110	47	0.2	8
+111	48	0.5	8
+112	49	0.1	8
+113	50	0.4	8
+114	51	0.8	8
+115	40	0.8	8
+116	29	0.3	9
+117	30	1	9
+118	32	0.3	9
+119	33	0.8	9
+120	34	0.7	9
+121	35	0.3	9
+122	36	0.1	9
+123	38	0.4	9
+124	39	0.4	9
+125	44	0.7	9
+126	45	0.2	9
+127	41	0.1	9
+128	42	0.2	9
+129	43	0.3	9
+130	31	0.9	9
+131	37	0.5	9
+132	46	0.8	9
+133	47	0.7	9
+134	48	0.1	9
+135	49	0.8	9
+136	50	0.3	9
+137	51	0.1	9
+138	40	0.7	9
 \.
 
 
@@ -11254,6 +11392,7 @@ COPY public."User" (id, "fullName", login, password, "roleId") FROM stdin;
 6	Нащёкина Юлия Сергеевна	julia.sergeevna56	$2b$10$y28P/91yg9/Xu/WAAlciFun.dLEEP.fhrX9yR9wGn87K6c/ycFbQm	3
 7	Елистратова Татьяна Александровна	elistr.tatyana1	$2b$10$XyfbUOHB.Tc83J2Vx/CpDeEDQflYIpNKhN2Uve2KTI8krjDxrelri	3
 8	Тоняева Анастасия Сергеевна	tonyaeva.anastasia21	$2b$10$aWUlyRXoBakyWbpYKzK/quwxC3CR.a0YFioGyZQ30qp6HPCyM3qQO	3
+9	test	test	$2b$10$lSXg/wp7KMmU6V/9WvhC1.XkmBNKihywNSqyu28AMbJDmgyzuKzfW	1
 \.
 
 
@@ -11290,7 +11429,7 @@ SELECT pg_catalog.setval('public."Department_id_seq"', 4, true);
 -- Name: EventRating_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."EventRating_id_seq"', 1, false);
+SELECT pg_catalog.setval('public."EventRating_id_seq"', 138, true);
 
 
 --
@@ -11339,7 +11478,7 @@ SELECT pg_catalog.setval('public."Student_id_seq"', 446, true);
 -- Name: User_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."User_id_seq"', 8, true);
+SELECT pg_catalog.setval('public."User_id_seq"', 9, true);
 
 
 --

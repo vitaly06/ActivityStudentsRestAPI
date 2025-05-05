@@ -10,7 +10,11 @@ async function bootstrap() {
 
   // 3. Настройка CORS (должна быть до Swagger)
   app.enableCors({
-    origin: ['http://localhost:5173'],
+    origin: [
+      'http://localhost:5173',
+      'http://193.168.48.222:3000',
+      'http://localhost:3000',
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

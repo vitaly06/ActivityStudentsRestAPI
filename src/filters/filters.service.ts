@@ -280,8 +280,8 @@ export class FiltersService {
         );
 
         return {
-          groupeId: groupe.id,
-          groupeName: groupe.groupeName,
+          id: groupe.id,
+          name: groupe.groupeName,
           department: groupe.department.departmentName,
           totalPoints, // Общая сумма баллов группы
           events: Filter.sort(groupeEvents, sort, customRange), // Отсортированные мероприятия
@@ -289,9 +289,10 @@ export class FiltersService {
       }),
     );
 
-    return {
-      course,
-      groups: result,
-    };
+    return result
+    // {
+    //   course,
+    //   groups: result,
+    // };
   }
 }

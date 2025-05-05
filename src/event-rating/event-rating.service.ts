@@ -50,8 +50,9 @@ export class EventRatingService {
         userRating: null,
       };
       return {
-        eventId: event.id,
-        eventName: `${event.eventName} ${this.formatDate(event.eventDate)}`,
+        id: event.id,
+        name: event.eventName,
+        date: this.formatDate(event.eventDate),
         rating: ratingData.userRating, // Оценка пользователя
         all: ratingData.total, // Общая сумма баллов
         count: ratingData.count, // Количество оценок

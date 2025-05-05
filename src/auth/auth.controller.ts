@@ -18,7 +18,7 @@ export class AuthController {
 
     res.cookie('access_token', result.access_token, {
       httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,
       maxAge: 30 * 24 * 60 * 60 * 1000,
       sameSite: 'strict', // Защита от CSRF
     });
